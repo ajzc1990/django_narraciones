@@ -1,0 +1,173 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="container-fluid py-4" style="background-color: #f8f9fa;">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-lg border-0 h-100" style="border-radius: 20px;">
+                <div class="card-header bg-primary text-white text-center py-3" style="border-radius: 20px 20px 0 0;">
+                    <h3 class="fw-bold mb-0">{{ cuento.nombre }}</h3>
+                </div>
+                <div class="card-body p-4 overflow-auto" style="max-height: 600px;">
+                    <div id="texto-lectura" class="fs-3 lh-lg text-dark" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                        {{ cuento.descripcion }}
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="text-center">
+                        <p class="small text-muted mb-2">Estado del Micrófono:</p>
+                        <span id="estado-mic" class="badge rounded-pill bg-danger px-4 py-2 fs-6 shadow-sm">Apagado</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0 overflow-hidden" style="border-radius: 25px; border: 8px solid white;">
+                <div id="escenario-vivo" style="position: relative; width: 100%; height: 650px; background-image: url('/static/img/fondo_bosque.png'); background-size: cover; background-position: center; background-color: #e0e0e0;">
+                    
+                    <div id="msg-espera" class="position-absolute top-50 start-50 translate-middle text-center p-4 shadow" style="background: rgba(255,255,255,0.8); border-radius: 20px; z-index: 10;">
+                        <i class="bi bi-mic-fill fs-1 text-primary animate__animated animate__pulse animate__infinite d-block"></i>
+                        <h4 class="fw-bold">¡Haz clic en "Iniciar" y empieza a leer!</h4>
+                        <p class="text-muted mb-0">Tus palabras darán vida al bosque.</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-12 text-center">
+            <button id="btn-iniciar" class="btn btn-success btn-lg rounded-pill px-5 py-3 shadow-lg fw-bold me-3">
+                <i class="bi bi-play-fill"></i> Iniciar Lectura
+            </button>
+
+            <form id="form-finalizar" method="POST" action="{% url 'finalizar_lectura' %}" class="d-inline">
+                {% csrf_token %}
+                <input type="hidden" name="pictogramas_activados" id="input-pictogramas-activados">
+                <button type="button" id="btn-finalizar-lectura" class="btn btn-danger btn-lg rounded-pill px-5 py-3 shadow-lg fw-bold">
+                    <i class="bi bi-flag-fill"></i> Finalizar y Ver Resultado
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. Diccionario de imágenes traído de Django
+    const biblioteca = {
+        {% for p in pictogramas %}
+            "{{ p.descripcion|lower }}": "/static/img/{{ p.tipo_imagen }}",
+        {% endfor %}
+    };
+
+    // 2. Coordenadas del Escenario Vivo (Posicionamiento absoluto)
+    const coordenadas = {
+        // Fondo y construcciones (atrás)
+        "casa":     { top: '15%', left: '55%', width: '320px', zIndex: 1 },
+        
+        // Personajes secundarios (medio)
+        "abuela":   { top: '38%', left: '72%', width: '100px', zIndex: 2 },
+        "cazador":  { top: '42%', left: '15%', width: '160px', zIndex: 3 },
+        "lobo":     { top: '55%', left: '5%',  width: '220px', zIndex: 4 },
+        
+        // Protagonista y objetos (adelante)
+        "caperucita": { top: '50%', left: '38%', width: '150px', zIndex: 5 },
+        "flores":   { top: '75%', left: '45%', width: '80px',  zIndex: 6 },
+        "canasta":  { top: '72%', left: '32%', width: '70px',  zIndex: 7 },
+        "manzanas": { top: '80%', left: '65%', width: '80px',  zIndex: 6 }
+    };
+
+    const btnIniciar = document.getElementById('btn-iniciar');
+    const btnFinalizar = document.getElementById('btn-finalizar-lectura');
+    const escenario = document.getElementById('escenario-vivo');
+    const msgEspera = document.getElementById('msg-espera');
+    const estadoMic = document.getElementById('estado-mic');
+    const textoLectura = document.getElementById('texto-lectura');
+    const inputPictogramas = document.getElementById('input-pictogramas-activados');
+    const formFinalizar = document.getElementById('form-finalizar');
+
+    let pictogramasDetectados = new Set();
+
+    // 3. Reconocimiento de Voz
+    if ('webkitSpeechRecognition' in window) {
+        const recognition = new webkitSpeechRecognition();
+        recognition.lang = 'es-AR';
+        recognition.continuous = true;
+        recognition.interimResults = true;
+
+        btnIniciar.onclick = () => {
+            recognition.start();
+            btnIniciar.disabled = true;
+            btnIniciar.innerHTML = '<span class="spinner-grow spinner-grow-sm"></span> Escuchando...';
+            estadoMic.innerText = "Encendido (Escuchando)";
+            estadoMic.classList.replace('bg-danger', 'bg-success');
+        };
+
+        recognition.onresult = (event) => {
+            let chunk = '';
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                chunk += event.results[i][0].transcript.toLowerCase();
+            }
+            procesarVoz(chunk);
+        };
+
+        function procesarVoz(texto) {
+            for (let palabra in biblioteca) {
+                if (texto.includes(palabra) && !pictogramasDetectados.has(palabra)) {
+                    aparecerEnEscenario(palabra, biblioteca[palabra]);
+                }
+            }
+        }
+
+        function aparecerEnEscenario(nombre, url) {
+            pictogramasDetectados.add(nombre);
+            msgEspera.style.display = 'none';
+
+            // Resaltado en el texto
+            const regex = new RegExp(`(${nombre})`, 'gi');
+            textoLectura.innerHTML = textoLectura.innerHTML.replace(regex, '<span class="text-success fw-bold border-bottom border-success">$1</span>');
+
+            // Crear el elemento en el escenario
+            const img = document.createElement('img');
+            img.src = url;
+            const pos = coordenadas[nombre] || { top: '50%', left: '50%', width: '100px', zIndex: 10 };
+            
+            img.style.position = 'absolute';
+            img.style.top = pos.top;
+            img.style.left = pos.left;
+            img.style.width = pos.width;
+            img.style.zIndex = pos.zIndex;
+            img.style.filter = "drop-shadow(5px 5px 10px rgba(0,0,0,0.3))";
+            img.className = "animate__animated animate__zoomInDown"; // Efecto de caída mágica
+            
+            escenario.appendChild(img);
+
+            // Sonido de logro
+            new Audio('https://www.soundjay.com/buttons/sounds/button-3.mp3').play();
+        }
+
+        btnFinalizar.onclick = () => {
+            inputPictogramas.value = JSON.stringify(Array.from(pictogramasDetectados));
+            formFinalizar.submit();
+        };
+
+    } else {
+        alert("Navegador no compatible con voz. Usa Chrome.");
+    }
+</script>
+
+<style>
+    #texto-lectura span {
+        background-color: rgba(40, 167, 69, 0.1);
+        padding: 0 5px;
+        border-radius: 4px;
+        transition: all 0.5s ease;
+    }
+    #escenario-vivo img {
+        pointer-events: none; /* Para que no interfieran con clics */
+    }
+</style>
+{% endblock %}

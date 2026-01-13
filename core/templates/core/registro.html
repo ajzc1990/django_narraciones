@@ -1,0 +1,50 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center my-4">
+    <div class="card p-4 shadow-lg" style="width: 100%; max-width: 550px; border-radius: 25px; border: 3px solid #ff9f43;">
+        <h2 class="text-center fw-bold mb-4" style="color: #ee5253;">Registrar Usuario</h2>
+        
+        <form method="POST" id="registroForm">
+            {% csrf_token %}
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small">Nombre (A)</label>
+                    <input type="text" name="nombre" class="form-control rounded-pill" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small">Apellido (B)</label>
+                    <input type="text" name="apellido" class="form-control rounded-pill" required>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-bold small">Edad (C)</label>
+                    <input type="number" name="edad" class="form-control rounded-pill" required>
+                </div>
+
+                <div class="col-md-8">
+                    <label class="form-label fw-bold small">Email de validación (D)</label>
+                    <input type="email" name="email" class="form-control rounded-pill" required>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label fw-bold small">Nombre de Usuario Único (E)</label>
+                    <input type="text" name="username" class="form-control rounded-pill" required>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label fw-bold small">Contraseña (F)</label>
+                    <input type="password" name="password" class="form-control rounded-pill" minlength="10" required>
+                    <div class="form-text ms-2">Mínimo 10 caracteres (Requisito RF-01).</div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-warning w-100 rounded-pill fw-bold text-white py-2 shadow-sm">
+                    Registrar (B1)
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

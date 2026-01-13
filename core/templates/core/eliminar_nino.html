@@ -1,0 +1,42 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="card p-4 shadow-lg mx-auto" style="max-width: 700px; border-radius: 25px; border: 3px solid #636e72;">
+        <h2 class="text-center fw-bold mb-4" style="color: #2d3436;">Eliminar Usuario (Niño)</h2>
+
+        <form method="GET" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="buscar" class="form-control rounded-start-pill" placeholder="Buscar para eliminar..." value="{{ query|default:'' }}">
+                <button class="btn btn-dark rounded-end-pill px-4" type="submit">Buscar</button>
+            </div>
+        </form>
+
+        {% if ninos %}
+        <div class="list-group mb-4">
+            {% for n in ninos %}
+            <a href="?id_borrar={{ n.id }}&buscar={{ query }}" class="list-group-item list-group-item-action">
+                <i class="bi bi-trash3 me-2"></i> {{ n.nombre }} {{ n.apellido }} (DNI: {{ n.dni }})
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if nino_a_eliminar %}
+        <div class="alert alert-danger text-center rounded-4 shadow-sm">
+            <h4 class="fw-bold">¿Está seguro?</h4>
+            <p>Se eliminará permanentemente a: <strong>{{ nino_a_eliminar.nombre }} {{ nino_a_eliminar.apellido }}</strong></p>
+            
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="id_nino" value="{{ nino_a_eliminar.id }}">
+                <div class="d-flex justify-content-center gap-3 mt-3">
+                    <button type="submit" class="btn btn-danger px-4 rounded-pill fw-bold">Aceptar (B1)</button>
+                    <a href="{% url 'eliminar_nino' %}" class="btn btn-secondary px-4 rounded-pill fw-bold">Cancelar (B2)</a>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

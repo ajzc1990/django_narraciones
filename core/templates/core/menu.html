@@ -1,0 +1,37 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="container text-center py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Menú Principal</h2>
+        <!-- <a href="{% url 'logout' %}" class="btn btn-outline-danger rounded-pill px-4 fw-bold">
+            <i class="bi bi-box-arrow-right"></i> Salir
+        </a> -->
+    </div>
+    
+    <div class="row g-4 justify-content-center">
+       
+
+        <div class="col-12 col-md-4">
+            <div class="d-grid gap-3">
+                
+                <a href="{% url 'lista_cuentos' %}" class="btn btn-lg shadow-sm py-3 fw-bold" style="background-color: #74b9ff; color: white; border-radius: 20px;">
+                    Comenzar Mi Lectura
+               </a>
+                <a href="{% url 'reportes' %}" class="btn btn-lg shadow-sm py-3 fw-bold" style="background-color: #d63031; color: white; border-radius: 20px;">
+                    Reporte
+                </a>
+                <a href="{% url 'alta_nino' %}" class="btn btn-lg shadow-sm py-3 fw-bold" style="background-color: #a29bfe; color: white; border-radius: 20px;">
+                    Alta Usuario
+                </a>
+                <a href="{% url 'modificar_nino' %}" class="btn btn-lg shadow-sm py-3 fw-bold" style="background-color: #00b894; color: white; border-radius: 20px;">
+                    Modificar Usuario
+                </a>
+                <a href="{% url 'eliminar_nino' %}" class="btn btn-lg shadow-sm py-3 fw-bold" style="background-color: #636e72; color: white; border-radius: 20px;">
+                    Eliminar Usuario
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

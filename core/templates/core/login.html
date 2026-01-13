@@ -1,0 +1,43 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center vh-100">
+    <div class="col-md-4 card p-4 shadow-lg text-center" style="border-radius: 25px; border: 2px solid #0d6efd;">
+        <h2 class="fw-bold text-primary mb-3">Sign in</h2>
+        
+        <div class="mb-4">
+            <i class="bi bi-person-circle text-secondary" style="font-size: 80px;"></i>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="mb-3 text-start">
+                <label class="form-label fw-bold">Usuario (Campo A)</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                    <input type="text" name="username" class="form-control rounded-pill-custom" required>
+                </div>
+            </div>
+            
+            <div class="mb-3 text-start">
+                <label class="form-label fw-bold">Contraseña (Campo B)</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                    <input type="password" name="password" class="form-control rounded-pill-custom" required>
+                </div>
+                <div class="form-text small">Mínimo 10 caracteres (RF-01).</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 rounded-pill-custom fw-bold py-2 mt-3">
+                Login (B1)
+            </button>
+        </form>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-danger mt-3 py-1 small">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center my-4">
+    <div class="card p-4 shadow-lg" style="width: 100%; max-width: 600px; border-radius: 30px; border: 4px solid #a29bfe;">
+        <div class="text-center mb-3">
+            <h2 class="fw-bold" style="color: #6c5ce7;">Alta Usuario (Niño)</h2>
+            <i class="bi bi-person-plus-fill text-primary" style="font-size: 50px;"></i>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small">Apellido (A)</label>
+                    <input type="text" name="apellido" class="form-control rounded-3" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small">Nombre (B)</label>
+                    <input type="text" name="nombre" class="form-control rounded-3" required>
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-bold small">Domicilio (C)</label>
+                    <input type="text" name="domicilio" class="form-control rounded-3" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small">Teléfono / DNI (D)</label>
+                    <input type="text" name="telefono" class="form-control rounded-3" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small">Fecha de Nacimiento (E)</label>
+                    <input type="date" name="fecha_nacimiento" class="form-control rounded-3" required>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-around mt-4">
+                <button type="submit" class="btn btn-success px-5 py-2 fw-bold rounded-pill shadow-sm">
+                    Aceptar (B1)
+                </button>
+                <a href="{% url 'menu_principal' %}" class="btn btn-danger px-5 py-2 fw-bold rounded-pill shadow-sm">
+                    Cancelar (B2)
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

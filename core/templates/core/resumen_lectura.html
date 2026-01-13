@@ -1,0 +1,31 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-success animate__animated animate__bounceInDown">¡Increíble Lectura!</h1>
+        <p class="fs-4 text-muted">Has descubierto {{ conteo }} elementos mágicos del cuento.</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="p-3 bg-white shadow-lg" style="border: 15px solid #5d4037; border-radius: 10px;">
+                {% if imagen_compuesta_url %}
+                    <img src="{{ imagen_compuesta_url }}" class="img-fluid w-100 animate__animated animate__fadeIn" alt="Tu cuento vivo">
+                {% else %}
+                    <div class="alert alert-warning">No se pudo generar la escena final.</div>
+                {% endif %}
+            </div>
+            
+            <div class="mt-5 text-center">
+                <button onclick="window.print()" class="btn btn-outline-dark btn-lg rounded-pill px-4 me-3">
+                    <i class="bi bi-printer"></i> Guardar Recuerdo
+                </button>
+                <a href="{% url 'lista_cuentos' %}" class="btn btn-primary btn-lg rounded-pill px-5 shadow">
+                    Leer otro cuento
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
